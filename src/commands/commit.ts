@@ -1,5 +1,13 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
+
+interface CommitOptions {
+  push?: boolean;
+}
 
 const COMMIT_TYPES = [
   { name: 'feat: A new feature', value: 'feat' },
@@ -15,7 +23,7 @@ const COMMIT_TYPES = [
   { name: 'revert: Reverts a previous commit', value: 'revert' },
 ];
 
-export async function commitCommand(): Promise<void> {
+export async function commitCommand(options: CommitOptions = {}): Promise<void> {
   try {
     const answers = await inquirer.prompt([
       {
@@ -60,9 +68,49 @@ export async function commitCommand(): Promise<void> {
     console.log('\n' + chalk.green('Generated commit message:'));
     console.log(chalk.cyan(commitMessage) + '\n');
     
-    // Copy instruction
-    console.log(chalk.gray('Copy the message above and use it with:'));
-    console.log(chalk.gray(`git commit -m "${commitMessage}"`));
+    // If --push flag is set, commit and push
+    if (options.push) {
+      try {
+        // Check if there are any changes to commit
+        const { stdout: statusOutput } = await execAsync('git status --porcelain');
+        if (!statusOutput.trim()) {
+          console.log(chalk.yellow('No changes to commit. Working tree is clean.'));
+          return;
+        }
+
+        // Stage all changes
+        console.log(chalk.blue('Staging changes...'));
+        await execAsync('git add -A');
+
+        // Commit with the generated message
+        console.log(chalk.blue('Committing changes...'));
+        await execAsync(`git commit -m "${commitMessage.replace(/"/g, '\\"')}"`);
+
+        // Get the current branch
+        const { stdout: branchOutput } = await execAsync('git rev-parse --abbrev-ref HEAD');
+        const currentBranch = branchOutput.trim();
+
+        // Push to remote
+        console.log(chalk.blue(`Pushing to origin/${currentBranch}...`));
+        await execAsync(`git push origin ${currentBranch}`);
+
+        console.log(chalk.green('\n✓ Successfully committed and pushed!'));
+        console.log(chalk.gray(`Branch: ${currentBranch}\n`));
+      } catch (gitError: any) {
+        if (gitError.code === 'ENOENT') {
+          console.error(chalk.red('Error: git is not installed or not found in PATH.'));
+        } else if (gitError.code === 128) {
+          console.error(chalk.red('Error: Not a git repository. Please run this command in a git repository.'));
+        } else {
+          console.error(chalk.red('Error during git operation:'), gitError.message);
+        }
+        process.exit(1);
+      }
+    } else {
+      // Copy instruction
+      console.log(chalk.gray('Copy the message above and use it with:'));
+      console.log(chalk.gray(`git commit -m "${commitMessage}"`));
+    }
   } catch (error) {
     if (error instanceof Error && error.name === 'ExitPromptError') {
       // User cancelled, exit gracefully

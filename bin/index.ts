@@ -14,8 +14,9 @@ program
 program
   .command('commit')
   .description('Generate a semantic commit message')
-  .action(async () => {
-    await commitCommand();
+  .option('--push', 'Automatically commit and push after generating the message')
+  .action(async (options) => {
+    await commitCommand(options);
   });
 
 program
