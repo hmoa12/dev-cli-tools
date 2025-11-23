@@ -1,0 +1,35 @@
+{
+  "name": "dev-cli-tools",
+  "version": "1.0.0",
+  "description": "A CLI tool for generating semantic commit messages",
+  "main": "dist/index.js",
+  "bin": {
+    "dev-cli": "./dist/bin/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node bin/index.ts",
+    "dev": "ts-node bin/index.ts"
+  },
+  "keywords": [
+    "cli",
+    "git",
+    "commit",
+    "semantic-commit",
+    "conventional-commits"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "inquirer": "^8.2.6"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^8.2.10",
+    "@types/node": "^20.10.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
+
