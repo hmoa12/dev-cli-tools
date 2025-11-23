@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import { commitCommand } from '../src/commands/commit';
 import { readmeCommand } from '../src/commands/readme';
+import { setCommand, deleteCommand, getCommand, listCommand, switchCommand } from '../src/commands/envset';
 
 const program = new Command();
 
@@ -30,6 +31,68 @@ program
     // Use positional argument if provided, otherwise use the --output flag
     const finalPath = outputPath || options.output;
     await readmeCommand({ ...options, output: finalPath });
+  });
+
+// Environment variable manager
+const envsetCommand = program
+  .command('envset')
+  .description('Manage environment variables in .env files');
+
+envsetCommand
+  .command('set')
+  .description('Set an environment variable')
+  .argument('<key>', 'Environment variable key')
+  .argument('<value...>', 'Environment variable value (use quotes for values with spaces)')
+  .option('-f, --file <file>', 'Specify .env file (default: .env)')
+  .option('--prod', 'Use .env.production file')
+  .option('--dev', 'Use .env.development file')
+  .action(async (key, valueParts, options) => {
+    // Join value parts in case of spaces (commander.js splits by default)
+    const value = Array.isArray(valueParts) ? valueParts.join(' ') : valueParts;
+    const envFile = options.prod ? '.env.production' : options.dev ? '.env.development' : (options.file || '.env');
+    await setCommand(key, value, envFile);
+  });
+
+envsetCommand
+  .command('delete')
+  .alias('del')
+  .description('Delete an environment variable')
+  .argument('<key>', 'Environment variable key to delete')
+  .option('-f, --file <file>', 'Specify .env file (default: .env)')
+  .option('--prod', 'Use .env.production file')
+  .option('--dev', 'Use .env.development file')
+  .action(async (key, options) => {
+    const envFile = options.prod ? '.env.production' : options.dev ? '.env.development' : (options.file || '.env');
+    await deleteCommand(key, envFile);
+  });
+
+envsetCommand
+  .command('get')
+  .description('Get an environment variable value')
+  .argument('<key>', 'Environment variable key')
+  .option('-f, --file <file>', 'Specify .env file (default: .env)')
+  .option('--prod', 'Use .env.production file')
+  .option('--dev', 'Use .env.development file')
+  .action(async (key, options) => {
+    const envFile = options.prod ? '.env.production' : options.dev ? '.env.development' : (options.file || '.env');
+    await getCommand(key, envFile);
+  });
+
+envsetCommand
+  .command('list')
+  .alias('ls')
+  .description('List all environment variables')
+  .option('-f, --file <file>', 'Specify .env file (default: .env)', '.env')
+  .action(async (options) => {
+    await listCommand(options.file);
+  });
+
+envsetCommand
+  .command('switch')
+  .description('Switch between different .env files')
+  .argument('<env-file>', 'Target .env file (e.g., .env.production, .env.development)')
+  .action(async (envFile) => {
+    await switchCommand(envFile);
   });
 
 program.parse();
