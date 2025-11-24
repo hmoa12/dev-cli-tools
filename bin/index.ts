@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { commitCommand } from '../src/commands/commit';
 import { readmeCommand } from '../src/commands/readme';
 import { setCommand, deleteCommand, getCommand, listCommand, switchCommand } from '../src/commands/envset';
+import { cleanCommand } from '../src/commands/cleaner';
 
 const program = new Command();
 
@@ -93,6 +94,23 @@ envsetCommand
   .argument('<env-file>', 'Target .env file (e.g., .env.production, .env.development)')
   .action(async (envFile) => {
     await switchCommand(envFile);
+  });
+
+program
+  .command('cleaner')
+  .description('Clean junk files and directories from a project')
+  .argument('[project-path]', 'Project path to clean (default: current directory)', process.cwd())
+  .option('--node_modules', 'Only delete node_modules directory')
+  .option('--force', 'Skip confirmation prompt')
+  .option('--dry-run', 'Show what would be deleted without actually deleting')
+  .action(async (projectPath, options) => {
+    // Handle both node_modules and nodeModules (commander.js converts differently)
+    const cleanOptions = {
+      nodeModules: options.node_modules || (options as any).nodeModules || false,
+      force: options.force || false,
+      dryRun: options.dryRun || (options as any).dry_run || false,
+    };
+    await cleanCommand(projectPath, cleanOptions);
   });
 
 program.parse();
