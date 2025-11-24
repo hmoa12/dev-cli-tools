@@ -1,8 +1,9 @@
 {
   "name": "dev-cli-tools",
   "version": "1.0.0",
-  "description": "A CLI tool for generating semantic commit messages",
+  "description": "A comprehensive CLI toolkit for developers: semantic commits, README generation, environment management, project cleanup, and API testing",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "dev-cli": "./dist/bin/index.js"
   },
@@ -12,17 +13,47 @@
     "dev": "ts-node bin/index.ts",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "cli",
     "git",
     "commit",
     "semantic-commit",
-    "conventional-commits"
+    "conventional-commits",
+    "readme-generator",
+    "readme",
+    "environment-variables",
+    "env-manager",
+    "dotenv",
+    "project-cleaner",
+    "cleanup",
+    "api-tester",
+    "http-client",
+    "rest-client",
+    "curl-alternative",
+    "developer-tools",
+    "productivity",
+    "devtools"
   ],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hmoa12/dev-cli-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hmoa12/dev-cli-tools/issues"
+  },
+  "homepage": "https://github.com/hmoa12/dev-cli-tools#readme",
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
