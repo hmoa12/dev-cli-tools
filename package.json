@@ -1,6 +1,6 @@
 {
   "name": "dev-cli-tools",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A comprehensive CLI toolkit for developers: semantic commits, README generation, environment management, project cleanup, and API testing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -37,7 +37,7 @@
     "productivity",
     "devtools"
   ],
-  "author": "",
+  "author": "Mohammad Abedy",
   "license": "ISC",
   "repository": {
     "type": "git",

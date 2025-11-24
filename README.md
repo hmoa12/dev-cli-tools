@@ -278,7 +278,7 @@ ISC
 
 ## Author
 
-[Your Name]
+Mohammad Abedy
 
 ## Repository
 
