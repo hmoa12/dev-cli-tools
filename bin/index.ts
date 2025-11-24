@@ -5,6 +5,7 @@ import { commitCommand } from '../src/commands/commit';
 import { readmeCommand } from '../src/commands/readme';
 import { setCommand, deleteCommand, getCommand, listCommand, switchCommand } from '../src/commands/envset';
 import { cleanCommand } from '../src/commands/cleaner';
+import { requestCommand, historyCommand } from '../src/commands/apiteset';
 
 const program = new Command();
 
@@ -111,6 +112,117 @@ program
       dryRun: options.dryRun || (options as any).dry_run || false,
     };
     await cleanCommand(projectPath, cleanOptions);
+  });
+
+// API Tester
+const apitesetCommand = program
+  .command('apiteset')
+  .description('Test APIs with GET, POST, PUT, PATCH, DELETE methods');
+
+// GET request
+apitesetCommand
+  .command('get')
+  .description('Make a GET request')
+  .argument('<url>', 'API endpoint URL')
+  .option('-H, --header <header>', 'HTTP header (format: Key:Value)', [])
+  .option('--no-history', 'Skip saving to history')
+  .option('--interactive-headers', 'Set headers interactively')
+  .action(async (url, options) => {
+    const headers = Array.isArray(options.header) ? options.header : (options.header ? [options.header] : []);
+    await requestCommand('GET', url, {
+      headers,
+      noHistory: options.noHistory || false,
+      interactiveHeaders: options.interactiveHeaders || false,
+    });
+  });
+
+// POST request
+apitesetCommand
+  .command('post')
+  .description('Make a POST request')
+  .argument('<url>', 'API endpoint URL')
+  .option('-b, --body <body>', 'Request body (JSON string)')
+  .option('-e, --editor', 'Open editor for request body')
+  .option('-H, --header <header>', 'HTTP header (format: Key:Value)', [])
+  .option('--no-history', 'Skip saving to history')
+  .option('--interactive-headers', 'Set headers interactively')
+  .action(async (url, options) => {
+    const headers = Array.isArray(options.header) ? options.header : (options.header ? [options.header] : []);
+    await requestCommand('POST', url, {
+      headers,
+      body: options.body,
+      editor: options.editor || false,
+      noHistory: options.noHistory || false,
+      interactiveHeaders: options.interactiveHeaders || false,
+    });
+  });
+
+// PUT request
+apitesetCommand
+  .command('put')
+  .description('Make a PUT request')
+  .argument('<url>', 'API endpoint URL')
+  .option('-b, --body <body>', 'Request body (JSON string)')
+  .option('-e, --editor', 'Open editor for request body')
+  .option('-H, --header <header>', 'HTTP header (format: Key:Value)', [])
+  .option('--no-history', 'Skip saving to history')
+  .option('--interactive-headers', 'Set headers interactively')
+  .action(async (url, options) => {
+    const headers = Array.isArray(options.header) ? options.header : (options.header ? [options.header] : []);
+    await requestCommand('PUT', url, {
+      headers,
+      body: options.body,
+      editor: options.editor || false,
+      noHistory: options.noHistory || false,
+      interactiveHeaders: options.interactiveHeaders || false,
+    });
+  });
+
+// PATCH request
+apitesetCommand
+  .command('patch')
+  .description('Make a PATCH request')
+  .argument('<url>', 'API endpoint URL')
+  .option('-b, --body <body>', 'Request body (JSON string)')
+  .option('-e, --editor', 'Open editor for request body')
+  .option('-H, --header <header>', 'HTTP header (format: Key:Value)', [])
+  .option('--no-history', 'Skip saving to history')
+  .option('--interactive-headers', 'Set headers interactively')
+  .action(async (url, options) => {
+    const headers = Array.isArray(options.header) ? options.header : (options.header ? [options.header] : []);
+    await requestCommand('PATCH', url, {
+      headers,
+      body: options.body,
+      editor: options.editor || false,
+      noHistory: options.noHistory || false,
+      interactiveHeaders: options.interactiveHeaders || false,
+    });
+  });
+
+// DELETE request
+apitesetCommand
+  .command('delete')
+  .description('Make a DELETE request')
+  .argument('<url>', 'API endpoint URL')
+  .option('-H, --header <header>', 'HTTP header (format: Key:Value)', [])
+  .option('--no-history', 'Skip saving to history')
+  .option('--interactive-headers', 'Set headers interactively')
+  .action(async (url, options) => {
+    const headers = Array.isArray(options.header) ? options.header : (options.header ? [options.header] : []);
+    await requestCommand('DELETE', url, {
+      headers,
+      noHistory: options.noHistory || false,
+      interactiveHeaders: options.interactiveHeaders || false,
+    });
+  });
+
+// History command
+apitesetCommand
+  .command('history')
+  .description('View API request history')
+  .option('--clear', 'Clear all history')
+  .action(async (options) => {
+    await historyCommand(options);
   });
 
 program.parse();
