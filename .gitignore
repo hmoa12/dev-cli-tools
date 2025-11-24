@@ -38,6 +38,8 @@ logs/
 # Testing
 coverage/
 .nyc_output/
+.jest-cache/
+*.test.js.map
 
 # Temporary files
 tmp/

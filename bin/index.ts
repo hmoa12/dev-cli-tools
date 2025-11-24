@@ -5,7 +5,7 @@ import { commitCommand } from '../src/commands/commit';
 import { readmeCommand } from '../src/commands/readme';
 import { setCommand, deleteCommand, getCommand, listCommand, switchCommand } from '../src/commands/envset';
 import { cleanCommand } from '../src/commands/cleaner';
-import { requestCommand, historyCommand } from '../src/commands/apiteset';
+import { requestCommand, historyCommand } from '../src/commands/apitest';
 
 const program = new Command();
 
@@ -115,13 +115,14 @@ program
   });
 
 // API Tester
-const apitesetCommand = program
-  .command('apiteset')
+const apitestCommand = program
+  .command('apitest')
   .description('Test APIs with GET, POST, PUT, PATCH, DELETE methods');
 
 // GET request
-apitesetCommand
+apitestCommand
   .command('get')
+  .alias('GET')
   .description('Make a GET request')
   .argument('<url>', 'API endpoint URL')
   .option('-H, --header <header>', 'HTTP header (format: Key:Value)', [])
@@ -137,8 +138,9 @@ apitesetCommand
   });
 
 // POST request
-apitesetCommand
+apitestCommand
   .command('post')
+  .alias('POST')
   .description('Make a POST request')
   .argument('<url>', 'API endpoint URL')
   .option('-b, --body <body>', 'Request body (JSON string)')
@@ -158,8 +160,9 @@ apitesetCommand
   });
 
 // PUT request
-apitesetCommand
+apitestCommand
   .command('put')
+  .alias('PUT')
   .description('Make a PUT request')
   .argument('<url>', 'API endpoint URL')
   .option('-b, --body <body>', 'Request body (JSON string)')
@@ -179,8 +182,9 @@ apitesetCommand
   });
 
 // PATCH request
-apitesetCommand
+apitestCommand
   .command('patch')
+  .alias('PATCH')
   .description('Make a PATCH request')
   .argument('<url>', 'API endpoint URL')
   .option('-b, --body <body>', 'Request body (JSON string)')
@@ -200,8 +204,9 @@ apitesetCommand
   });
 
 // DELETE request
-apitesetCommand
+apitestCommand
   .command('delete')
+  .alias('DELETE')
   .description('Make a DELETE request')
   .argument('<url>', 'API endpoint URL')
   .option('-H, --header <header>', 'HTTP header (format: Key:Value)', [])
@@ -217,7 +222,7 @@ apitesetCommand
   });
 
 // History command
-apitesetCommand
+apitestCommand
   .command('history')
   .description('View API request history')
   .option('--clear', 'Clear all history')

@@ -24,7 +24,7 @@ interface HistoryEntry {
     status: number;
     statusText: string;
     headers: Record<string, string>;
-    body: string;
+    body: string | object;
   };
   timestamp: string;
 }
@@ -33,13 +33,16 @@ interface HistoryEntry {
  * Get history file path
  */
 function getHistoryFilePath(): string {
-  return path.join(process.cwd(), '.apiteset-history.json');
+  return path.join(process.cwd(), '.apitest-history.json');
 }
 
 /**
  * Format JSON with proper indentation
  */
-function formatJson(data: string): string {
+function formatJson(data: string | object): string {
+  if (typeof data === 'object') {
+    return JSON.stringify(data, null, 2);
+  }
   try {
     const parsed = JSON.parse(data);
     return JSON.stringify(parsed, null, 2);
@@ -179,14 +182,32 @@ async function saveToHistory(
       // File doesn't exist, start with empty array
     }
 
-    // Create new entry
+    // Parse response body if it's valid JSON to make it more readable in history file
+    let formattedResponseBody: string | object = response.body;
+    const contentType = response.headers['content-type'] || response.headers['Content-Type'] || '';
+    
+    // Try to parse as JSON if content-type indicates JSON, or if body looks like JSON
+    if (contentType.includes('application/json') || 
+        (response.body.trim().startsWith('{') || response.body.trim().startsWith('['))) {
+      try {
+        formattedResponseBody = JSON.parse(response.body);
+      } catch {
+        // If parsing fails, keep as string
+        formattedResponseBody = response.body;
+      }
+    }
+
+    // Create new entry with formatted response body
     const entry: HistoryEntry = {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       method,
       url,
       headers,
       body,
-      response,
+      response: {
+        ...response,
+        body: formattedResponseBody,
+      },
       timestamp: new Date().toISOString(),
     };
 
@@ -324,7 +345,9 @@ export async function requestCommand(
 
         // Validate JSON
         try {
-          JSON.parse(requestBody);
+          if (requestBody) {
+            JSON.parse(requestBody);
+          }
         } catch {
           console.error(chalk.red('Error: Invalid JSON in request body.'));
           process.exit(1);
@@ -487,11 +510,7 @@ export async function historyCommand(options: { clear?: boolean }): Promise<void
           chalk.green(`Status: ${selectedEntry.response.status} ${selectedEntry.response.statusText}`)
         );
         console.log(chalk.yellow('Body:'));
-        try {
-          console.log(formatJson(selectedEntry.response.body));
-        } catch {
-          console.log(selectedEntry.response.body);
-        }
+        console.log(formatJson(selectedEntry.response.body));
         console.log('');
       } else if (answer.action === 'replay') {
         // Replay request
@@ -517,4 +536,3 @@ export async function historyCommand(options: { clear?: boolean }): Promise<void
     }
   }
 }
-
