@@ -1,6 +1,6 @@
 {
   "name": "dev-cli-tools",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A comprehensive CLI toolkit for developers: semantic commits, README generation, environment management, project cleanup, and API testing",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
